@@ -5,7 +5,7 @@ There are many Internet examples of Java-based Flink DataStream applications tha
 Flink Kafka connector with Avro and JSON message payloads. However, those examples may be confusing due to the
 multiple different versions of Flink. Many of the classes and methods for the serialization/deserialization
 have been deprecated. As a result, many of the samples do not work when using
-current versions of Flink. All the samples provided here are based on Flink 1.19. Equivalent version of the samples using version 1.2x will be added soon.
+current versions of Flink. All the samples provided here are based on Flink 1.19. Equivalent version of the samples using version 2.x will be added soon.
 
 In the Confluent world, the problem with the Internet examples is that they do not include examples JSON and/or Avro 
 that support a Schema Registry as part of their Kafka messaging. Generally, the registries include additional
