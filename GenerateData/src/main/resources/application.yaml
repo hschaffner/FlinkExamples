@@ -1,0 +1,115 @@
+spring:
+  cloud:
+    function:
+      definition: inAvroOutJson;sinkListen;avroListen
+    stream:
+
+
+      bindings:
+
+        inAvroOutJson-out-0:
+          destination: flinkJsonTopic
+          producer:
+            useNativeEncoding: true
+            partitionCount: 3
+
+
+        toStream-out-0:
+          destination: flinkAvroTopic
+          producer:
+            useNativeEncoding: true
+            partitionCount: 3
+
+
+        inAvroOutJson-in-0:
+          group: testGroup
+          destination: flinkAvroTopic
+          consumer:
+            useNativeDecoding: true
+
+        sinkListen-in-0:
+          destination: flinkJsonTopic
+          group: sinkTestGroup
+          consumer:
+            useNativeDecoding: false
+
+
+
+        avroListen-in-0:
+          destination: flinkAvroTopic
+          group: avroTestGroup
+          consumer:
+            useNativeDecoding: true
+
+
+
+      kafka:
+        binder:
+          brokers: kafka.confluent.svc:9071
+#          brokers: kafka.heinzx.ca # Direct to broker through LB
+#          brokers: kafka9092.heinzx.ca # to broker via ngress-gateway
+          defaultBrokerPort: 9071 #internal listener in in k8s cluster
+          autoCreateTopics: true
+          autoAddPartitions: true
+          minPartitionCount: 3
+
+
+
+        bindings:
+
+          inAvroOutJson-out-0:
+            producer:
+              messageKeyExpression: headers['recKey'] #define the key for the records from header
+              configuration:
+                value.serializer: io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer
+          #      key.serializer: org.apache.kafka.common.serialization.StringSerializer
+                key.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+                schema.registry.url: http://schemaregistry.confluent.svc:8081
+                specific.avro.reader: true
+
+          inAvroOutJson-in-0:
+            consumer:
+              configuration:
+                schema.registry.url: http://schemaregistry.confluent.svc:8081
+                value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+                specific.avro.reader: true
+
+          toStream-out-0:
+            producer:
+              messageKeyExpression: headers['recKey'] #define the key for the records from header
+              configuration:
+                useNativeEncoding: true
+                value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+        #        key.serializer: org.apache.kafka.common.serialization.StringSerializer
+                key.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+                schema.registry.url: http://schemaregistry.confluent.svc:8081
+
+          sinkListen-in-0:
+            consumer:
+              configuration:
+                schema.registry.url: http://schemaregistry.confluent.svc:8081
+                value.deserializer: io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer
+           #     key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+                key.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+           #     specific.avro.reader: true
+
+
+          avroListen-in-0:
+            consumer:
+              configuration:
+                specific.avro.reader: true
+                schema.registry.url: http://schemaregistry.confluent.svc:8081
+                value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+# REST listening port for POST Request
+server:
+  port: 9090
+
+
+
+
+
+
+

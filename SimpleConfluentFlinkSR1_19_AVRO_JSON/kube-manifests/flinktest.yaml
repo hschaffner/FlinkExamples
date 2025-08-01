@@ -1,0 +1,59 @@
+apiVersion: platform.confluent.io/v1beta1
+#apiVersion: flink.apache.org/v1beta1
+kind: FlinkApplication
+#kind: FlinkDeployment
+
+metadata:
+  name: flink-test-avro-json
+  namespace: confluent
+
+spec:
+
+  flinkConfiguration:
+    rest.flamegraph.enabled: "true"
+    metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+    metrics.reporter.prom.port: 9249-9250
+    taskmanager.numberOfTaskSlots: '2'
+    job.autoscaler.enabled: "true"
+    job.autoscaler.stabilization.interval: 1m
+    job.autoscaler.metrics.window: 5m
+    job.autoscaler.target.utilization: "0.6"
+    job.autoscaler.target.utilization.boundary: "0.2"
+    job.autoscaler.restart.time: 2m
+    job.autoscaler.catch-up.duration: 5m
+    pipeline.max-parallelism: "720"
+    job.autoscaler.vertex.max-parallelism: "3"
+    job.autoscaler.vertex.min-parallelism: "1"
+    register.consumer.metrics: "true"
+    commit.offsets.on.checkpoint: "true"
+
+
+
+
+
+  imagePullPolicy: Always
+  image: heinz57/flink-test-avro-json:ver1.11
+  flinkEnvironment: env-json
+  flinkVersion: v1_19
+  serviceAccount: flink
+#  logConfiguration:
+#    log4j-console.properties: |+
+#      rootLogger.level = DEBUG
+#      rootLogger.appenderRef.file.ref = LogFile
+  jobManager:
+    #replicas: 2
+    resource:
+      memory: "2048m"
+      cpu: 1
+  taskManager:
+  #  replicas: 2
+    resource:
+      memory: "2048m"
+      cpu: 1
+  job:
+    #parallelism.default: 2
+    parallelism: 2
+    state: running
+    upgradeMode: stateless
+    jarURI: file:///opt/flink/usrlib/job.jar
+

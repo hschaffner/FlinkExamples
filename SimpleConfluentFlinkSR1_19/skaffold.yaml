@@ -1,0 +1,21 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: simpleconfluentflinksr-jre-17
+build:
+  tagPolicy:
+    #sha256: { }
+    envTemplate:    #  	beta tags images with a configurable template string.
+      template: "{{.RELEASE}}"
+  artifacts:
+    - image: flink-test-sr
+      docker:
+        dockerfile: Dockerfile
+
+
+manifests:
+  rawYaml:
+    #- CMF_Manifest/CMF_REST.yaml
+    #- CMF_Manifest/CMF_env.yaml
+    #- CMF_Manifest/CMF_env_flink-test-sr.yaml
+    - kube-manifests/flinktest.yaml

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-avroin-jsonout
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kube-avroin-jsonout
+  template:
+    metadata:
+      labels:
+        app: kube-avroin-jsonout
+    spec:
+      containers:
+        - name: server
+          image: docker.io/heinz57/kube-avroin-jsonout:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9090
+          env:
+            - name: PORT
+              value: "9090"
+            # This environment variable enables debugging support for the container.
+            # Remove this to disable the debug build.
+#            - name: JAVA_TOOL_OPTIONS
+#              value: -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y
+          readinessProbe:
+            tcpSocket:
+              port: 9090
+            initialDelaySeconds: 5

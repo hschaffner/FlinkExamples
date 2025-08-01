@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: schema-avromsg
+  namespace: confluent
+data:
+  schema: |
+    {
+      "fields": [
+        {
+          "avro.java.string": "String",
+          "name": "first_name",
+          "type": {
+            "avro.java.string": "String",
+            "type": "string"
+          }
+        },
+        {
+          "avro.java.string": "String",
+          "name": "last_name",
+          "type": {
+            "avro.java.string": "String",
+            "type": "string"
+          }
+        },
+        {
+          "name": "customer_id",
+          "type": "int"
+        }
+      ],
+      "name": "avroMsg",
+      "namespace": "io.confluent.heinz.test",
+      "type": "record"
+    }
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Schema
+metadata:
+  name: flinkavrotopic-value
+  namespace: confluent
+spec:
+  name: flinkAvroTopic-value
+  data:
+    format: avro
+    configRef: schema-avromsg
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Schema
+metadata:
+  name: flinkavrotopicisink-value
+  namespace: confluent
+spec:
+  name: flinkAvroTopicSink-value
+  data:
+    format: avro
+    configRef: schema-avromsg

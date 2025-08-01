@@ -1,0 +1,11 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: CMFRestClass
+metadata:
+  name: default
+  namespace: confluent
+spec:
+  cmfRest:
+    endpoint: http://cmf-service:80
+#    authentication:
+#      type: basic
+#      sslClientAuthentication: false

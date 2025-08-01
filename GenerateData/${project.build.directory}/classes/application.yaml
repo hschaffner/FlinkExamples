@@ -1,0 +1,83 @@
+spring:
+  cloud:
+    stream:
+      function:
+        definition: inAvroOutJson
+
+      bindings:
+
+        inAvroOutJson-out-0:
+          destination: jsonTopic.v1
+          producer:
+            useNativeEncoding: true
+            partitionCount: 4
+            topic:
+              replication-factor: 3
+
+        toStream-out-0:
+          destination: avroTopic.v1
+          producer:
+            useNativeEncoding: true
+            partitionCount: 4
+            topic:
+              replication-factor: 3
+
+
+        inAvroOutJson-in-0:
+          group: testGroup
+          destination: avroTopic.v1
+          consumer:
+            useNativeDecoding: true
+            autoRebalanceEnabled: true
+            partitionCount: 4
+
+
+      kafka:
+        binder:
+          brokers: kafka.confluent.svc
+#          brokers: kafka.heinzx.ca # Direct to broker through LB
+#          brokers: kafka9092.heinzx.ca # to broker via ngress-gateway
+          defaultBrokerPort: 9092
+          autoCreateTopics: true
+          autoAddPartitions: true
+          minPartitionCount: 3
+        bindings:
+          inAvroOutJson-out-0:
+            producer:
+              messageKeyExpression: headers['recKey'] #define the key for the records from header
+              configuration:
+                value.serializer: io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer
+                key.serializer: org.apache.kafka.common.serialization.StringSerializer
+                schema.registry.url: http://schemaregistry.confluent.svc:8081
+#                schema.registry.url: http://schemaregistry-demo.heinzx.ca:80 # access via ingress-gateway
+                interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
+
+          inAvroOutJson-in-0:
+            consumer:
+              configuration:
+                schema.registry.url: http://schemaregistry.confluent.svc:8081
+#                schema.registry.url: http://schemaregistry-demo.heinzx.ca:80 # access via ingress-gateway
+                value.deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+                specific.avro.reader: true
+                interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
+
+          toStream-out-0:
+            producer:
+              messageKeyExpression: headers['recKey'] #define the key for the records from header
+              configuration:
+                value.serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+                key.serializer: org.apache.kafka.common.serialization.StringSerializer
+                schema.registry.url: http://schemaregistry.confluent.svc:8081
+#                schema.registry.url: http://schemaregistry-demo.heinzx.ca:80 # access via ingress-gateway
+                interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
+
+# REST listening port for POST Request
+server:
+  port: 9090
+
+
+
+
+
+
+

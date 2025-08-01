@@ -1,0 +1,14 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: flink-json-topic
+  namespace: confluent
+spec:
+  name: flinkJsonTopic
+  replicas: 1
+  partitionCount: 3
+  kafkaClusterRef:
+    name: kafka
+    namespace: confluent
+  configs:
+    cleanup.policy: "delete"

@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: schema-avromsgk
+  namespace: confluent
+data:
+  schema: |
+    {
+      "type": "record",
+      "name": "avroMsgK",
+      "namespace": "io.confluent.heinz.test",
+      "fields": [
+        {
+          "name": "client",
+          "type": "string"
+        },
+        {
+          "name": "clientID",
+          "type": "int"
+        }
+      ]
+    }
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Schema
+metadata:
+  name: flinkjsontopic-key
+  namespace: confluent
+spec:
+  name: flinkJsonTopic-key
+  data:
+    format: avro
+    configRef: schema-avromsgk

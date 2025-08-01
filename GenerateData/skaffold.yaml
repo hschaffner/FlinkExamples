@@ -1,0 +1,15 @@
+apiVersion: skaffold/v4beta2
+kind: Config
+metadata:
+  name: test
+build:
+  tagPolicy:
+    sha256: { }
+  artifacts:
+    - image: docker.io/heinz57/kube-avroin-jsonout
+      jib:
+        project: io.confluent.heinz.test:kube-avroin-jsonout
+manifests:
+  rawYaml:
+    - kubernetes-manifests/kubeavroinjsonout-svc.yaml
+    - kubernetes-manifests/kubeavroinjsonout.yaml
