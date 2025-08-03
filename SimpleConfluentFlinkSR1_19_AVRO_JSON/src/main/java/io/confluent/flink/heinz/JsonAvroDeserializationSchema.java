@@ -41,7 +41,7 @@ public class JsonAvroDeserializationSchema implements KafkaRecordDeserialization
     public void open(DeserializationSchema.InitializationContext context) throws Exception {
         Properties avroProps = new Properties();
         avroProps.put("schema.registry.url", appProps.getPropName("schemaRegURL"));
-        avroKeyDeserializer = new CFLTAvroKeyDeserializeSchema(appProps.getPropName("topicSource"), avroProps);
+        avroKeyDeserializer = new CFLTAvroKeyDeserializeSchema(appProps.getPropName("topicSource_JSON"), avroProps);
         avroKeyDeserializer.open(context);
 
         Properties jsonProps = new Properties();
